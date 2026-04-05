@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dro Tunes Dashboard</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">Dro Tunes</p>
+        <h1>Control your Discord music bot from anywhere.</h1>
+        <p class="lede">
+          Slash commands handle server playback. This dashboard gives you a fast remote cockpit
+          for queue visibility, volume control, and transport actions on your `.xyz` domain.
+        </p>
+        <div class="auth-bar">
+          <label for="token">Dashboard token</label>
+          <input id="token" type="password" placeholder="Paste DASHBOARD_AUTH_TOKEN" />
+          <button id="saveToken">Connect</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Live Players</h2>
+          <button id="refresh">Refresh</button>
+        </div>
+        <div id="players" class="players"></div>
+      </section>
+    </main>
+
+    <template id="playerTemplate">
+      <article class="player-card">
+        <div class="card-top">
+          <div>
+            <p class="guild-name"></p>
+            <p class="status-line"></p>
+          </div>
+          <span class="pill volume-pill"></span>
+        </div>
+        <div class="now-playing"></div>
+        <div class="controls">
+          <button data-action="pause">Pause</button>
+          <button data-action="resume">Resume</button>
+          <button data-action="skip">Skip</button>
+          <button data-action="stop">Stop</button>
+        </div>
+        <label class="volume-control">
+          <span>Volume</span>
+          <input data-volume type="range" min="1" max="150" />
+        </label>
+        <div class="queue"></div>
+      </article>
+    </template>
+
+    <script type="module" src="/assets/app.js"></script>
+  </body>
+  </html>

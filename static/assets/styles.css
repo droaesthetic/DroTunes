@@ -1,0 +1,208 @@
+:root {
+  --bg: #0f1115;
+  --bg-soft: #171a21;
+  --panel: rgba(20, 24, 31, 0.82);
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #f5f7fb;
+  --muted: #9aa4b2;
+  --accent: #7ef7c9;
+  --danger: #ff7b72;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(126, 247, 201, 0.16), transparent 32%),
+    radial-gradient(circle at top right, rgba(35, 211, 156, 0.14), transparent 28%),
+    linear-gradient(180deg, #0b0d11 0%, #11141b 100%);
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.hero {
+  padding: 36px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--accent);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 0.96;
+  max-width: 12ch;
+  margin-bottom: 18px;
+}
+
+.lede {
+  max-width: 62ch;
+  color: var(--muted);
+}
+
+.auth-bar {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.auth-bar label,
+.volume-control span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+input,
+button {
+  border: 0;
+  border-radius: 14px;
+  font: inherit;
+}
+
+input {
+  min-width: 260px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+}
+
+button {
+  padding: 13px 16px;
+  background: var(--accent);
+  color: #07120d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.panel {
+  margin-top: 22px;
+  padding: 28px;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.panel-head,
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.players {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.player-card {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+}
+
+.guild-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.status-line,
+.queue-item,
+.empty {
+  color: var(--muted);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(126, 247, 201, 0.12);
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.now-playing {
+  margin: 18px 0;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.controls button {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text);
+}
+
+.volume-control {
+  display: block;
+  margin: 18px 0;
+}
+
+.volume-control input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.queue {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 720px) {
+  .shell {
+    width: min(100% - 24px, 100%);
+    padding-top: 24px;
+  }
+
+  .hero,
+  .panel {
+    padding: 20px;
+    border-radius: 22px;
+  }
+}

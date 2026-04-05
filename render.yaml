@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: dro-tunes
+    runtime: node
+    plan: free
+    buildCommand: npm install --ignore-scripts && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_GUILD_ID
+        sync: false
+      - key: DASHBOARD_AUTH_TOKEN
+        sync: false
+      - key: DASHBOARD_PUBLIC_URL
+        sync: false
+      - key: BOT_OWNERS
+        sync: false
+      - key: DEFAULT_VOLUME
+        value: "75"
+      - key: MAX_QUEUE_SIZE
+        value: "100"
