@@ -25,7 +25,11 @@ export function createDashboardServer(getMusic: () => MusicManager | null) {
     };
 
   app.use((request, response, next) => {
-    if (request.path === "/health" || request.path.startsWith("/assets")) {
+    if (
+      request.path === "/" ||
+      request.path === "/health" ||
+      request.path.startsWith("/assets")
+    ) {
       next();
       return;
     }
