@@ -1,14 +1,18 @@
 import { createBot } from "./bot/createBot.js";
 import { createDashboardServer } from "./dashboard/server.js";
 import { appConfig } from "./config.js";
+import type { MusicManager } from "./music/musicManager.js";
 
 async function main() {
-  const { music } = await createBot();
-  const app = createDashboardServer(music);
+  let music: MusicManager | null = null;
+  const app = createDashboardServer(() => music);
 
   app.listen(appConfig.dashboardPort, () => {
     console.log(`Dashboard listening on ${appConfig.dashboardPublicUrl}`);
   });
+
+  const bot = await createBot();
+  music = bot.music;
 }
 
 main().catch((error) => {
