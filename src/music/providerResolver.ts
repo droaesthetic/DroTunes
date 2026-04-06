@@ -140,13 +140,21 @@ export class ProviderResolver {
   private async findPlayableAlternative(query: string) {
     const [video] = await play.search(query, { limit: 1 });
     if (video) {
+      const playbackUrl = video.url ?? ("id" in video && video.id
+        ? `https://www.youtube.com/watch?v=${video.id}`
+        : undefined);
+
+      if (!playbackUrl) {
+        throw new Error("Found a YouTube result, but it did not include a playable URL.");
+      }
+
       return {
         title: video.title ?? "Unknown title",
         artist: video.channel?.name,
         artwork: video.thumbnails?.at(-1)?.url,
         durationInSeconds: video.durationInSec,
         playbackProvider: "youtube" as const,
-        playbackUrl: video.url
+        playbackUrl
       };
     }
 
