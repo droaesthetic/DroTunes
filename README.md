@@ -3,9 +3,11 @@
 Dro Tunes is a Discord music bot starter with:
 
 - Discord slash commands
+- optional prefixed text commands
 - high-quality voice playback via `@discordjs/voice`
 - URL intake for YouTube, SoundCloud, Spotify, Deezer, Apple Music, Suno, and Amazon Music
 - a password-protected web dashboard you can host on your own `.xyz` domain
+- persistent queues, playlists, autoplay, queue cleanup tools, and per-guild permissions
 
 ## What "supports these links" means
 
@@ -39,16 +41,60 @@ npm run dev
 
 `http://localhost:3000`
 
+## Features
+
+- persistent queue state in `data/state.json`
+- per-guild settings for prefix, autoplay, vote skip, DJ role, and permission mode
+- playlist save/load/delete
+- queue cleanup commands: remove absent, remove duplicates, remove last, mass remove, clear
+- playback controls: previous, skip to, fast forward, rewind, volume
+- optional prefixed commands using the stored guild prefix
+
 ## Slash commands
 
 - `/play query:<url or search>`
-- `/skip`
 - `/pause`
 - `/resume`
 - `/stop`
+- `/clear`
+- `/remove index:<position>`
+- `/removelast`
+- `/removeduplicates`
+- `/removeabsent`
+- `/massremove start:<position> count:<count>`
+- `/previous`
+- `/skip`
+- `/skip to:<position>`
 - `/queue`
 - `/nowplaying`
+- `/fastforward seconds:<seconds>`
+- `/rewind seconds:<seconds>`
 - `/volume percent:<1-150>`
+- `/autoplay enabled:<true|false>`
+- `/voteskip enabled:<optional boolean>`
+- `/prefix show|set`
+- `/permissions show|mode|djrole`
+- `/playlist save|load|addcurrent|list|delete`
+- `/clean amount:<optional>`
+
+## Prefix commands
+
+Once you set a prefix with `/prefix set`, the bot also supports:
+
+- `<prefix>play <query>`
+- `<prefix>skip`
+- `<prefix>queue`
+- `<prefix>nowplaying`
+- `<prefix>pause`
+- `<prefix>resume`
+- `<prefix>clear`
+
+## Discord settings
+
+In the Discord Developer Portal, enable:
+
+- `Server Members Intent`
+- `Message Content Intent` if you want prefixed commands to work
 
 ## Dashboard hosting
 
@@ -58,6 +104,25 @@ Point your `.xyz` domain to the machine or host running this app, then set:
 - `DASHBOARD_AUTH_TOKEN` to a long random secret
 
 The dashboard uses a bearer token for control. Put it behind Cloudflare Access, Tailscale Funnel, Caddy basic auth, or another gate if you want an extra security layer.
+
+## Render production setup
+
+For Render:
+
+1. Connect the GitHub repo.
+2. Deploy the `render.yaml` blueprint or use a Node web service.
+3. Set secrets:
+   - `DISCORD_TOKEN`
+   - `DISCORD_CLIENT_ID`
+   - `DASHBOARD_AUTH_TOKEN`
+   - `DASHBOARD_PUBLIC_URL`
+4. After the first deploy, add your custom domain in Render:
+   - `Settings -> Custom Domains -> Add Custom Domain`
+   - enter `drotunes.xyz` or `dashboard.drotunes.xyz`
+5. Copy the DNS target Render gives you and add it at your registrar.
+6. Update `DASHBOARD_PUBLIC_URL` to the final `https://...` domain and redeploy.
+
+Render will provision TLS automatically after DNS is correct.
 
 ## Notes on audio quality
 

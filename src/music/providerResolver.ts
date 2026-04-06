@@ -1,10 +1,12 @@
 import play from "play-dl";
+import { randomUUID } from "node:crypto";
 import { fetch } from "undici";
 import type { Provider, ResolvedTrack } from "../types.js";
 
 interface ResolveOptions {
   query: string;
   requestedBy: string;
+  requestedById: string;
 }
 
 const providerMatchers: Array<{ provider: Provider; regex: RegExp }> = [
@@ -18,19 +20,19 @@ const providerMatchers: Array<{ provider: Provider; regex: RegExp }> = [
 ];
 
 export class ProviderResolver {
-  async resolve({ query, requestedBy }: ResolveOptions): Promise<ResolvedTrack> {
+  async resolve({ query, requestedBy, requestedById }: ResolveOptions): Promise<ResolvedTrack> {
     const provider = this.detectProvider(query);
 
     if (provider === "search") {
-      return this.resolveSearch(query, requestedBy);
+      return this.resolveSearch(query, requestedBy, requestedById);
     }
 
     if (provider === "youtube") {
-      return this.resolveYouTube(query, requestedBy);
+      return this.resolveYouTube(query, requestedBy, requestedById);
     }
 
     if (provider === "soundcloud") {
-      return this.resolveSoundCloud(query, requestedBy);
+      return this.resolveSoundCloud(query, requestedBy, requestedById);
     }
 
     const metadata = await this.resolveMetadataFromUrl(query, provider);
@@ -44,9 +46,12 @@ export class ProviderResolver {
       artwork: metadata.artwork ?? playback.artwork,
       durationInSeconds: metadata.durationInSeconds ?? playback.durationInSeconds,
       requestedBy,
+      requestedById,
       sourceProvider: provider,
       playbackProvider: playback.playbackProvider,
-      playbackUrl: playback.playbackUrl
+      playbackUrl: playback.playbackUrl,
+      id: randomUUID(),
+      addedAt: new Date().toISOString()
     };
   }
 
@@ -60,43 +65,52 @@ export class ProviderResolver {
     return "search";
   }
 
-  private async resolveSearch(query: string, requestedBy: string): Promise<ResolvedTrack> {
+  private async resolveSearch(query: string, requestedBy: string, requestedById: string): Promise<ResolvedTrack> {
     const playback = await this.findPlayableAlternative(query);
     return {
       ...playback,
       url: query,
       requestedBy,
-      sourceProvider: "search"
+      requestedById,
+      sourceProvider: "search",
+      id: randomUUID(),
+      addedAt: new Date().toISOString()
     };
   }
 
-  private async resolveYouTube(url: string, requestedBy: string): Promise<ResolvedTrack> {
+  private async resolveYouTube(url: string, requestedBy: string, requestedById: string): Promise<ResolvedTrack> {
     const video = await play.video_info(url);
     return {
+      id: randomUUID(),
       title: video.video_details.title ?? "Unknown title",
       artist: video.video_details.channel?.name,
       url,
       artwork: video.video_details.thumbnails?.at(-1)?.url,
       durationInSeconds: Number(video.video_details.durationInSec) || undefined,
       requestedBy,
+      requestedById,
       sourceProvider: "youtube",
       playbackProvider: "youtube",
-      playbackUrl: url
+      playbackUrl: url,
+      addedAt: new Date().toISOString()
     };
   }
 
-  private async resolveSoundCloud(url: string, requestedBy: string): Promise<ResolvedTrack> {
+  private async resolveSoundCloud(url: string, requestedBy: string, requestedById: string): Promise<ResolvedTrack> {
     const track = await play.soundcloud(url);
     return {
+      id: randomUUID(),
       title: track.name,
       artist: track.user?.name,
       url,
       artwork: "thumbnail" in track ? track.thumbnail : undefined,
       durationInSeconds: track.durationInSec,
       requestedBy,
+      requestedById,
       sourceProvider: "soundcloud",
       playbackProvider: "soundcloud",
-      playbackUrl: url
+      playbackUrl: url,
+      addedAt: new Date().toISOString()
     };
   }
 
