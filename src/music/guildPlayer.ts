@@ -5,6 +5,7 @@ import {
   createAudioPlayer,
   createAudioResource,
   entersState,
+  getVoiceConnection,
   joinVoiceChannel,
   type AudioResource,
   type VoiceConnection
@@ -71,11 +72,21 @@ export class GuildPlayer {
       this.connection = undefined;
     }
 
+    const staleConnection = getVoiceConnection(voiceChannel.guild.id);
+    if (staleConnection) {
+      console.log(`[voice:${this.guild.id}] destroying stale guild voice connection`);
+      staleConnection.destroy();
+    }
+
     this.connection = joinVoiceChannel({
       channelId: voiceChannel.id,
       guildId: voiceChannel.guild.id,
       adapterCreator: voiceChannel.guild.voiceAdapterCreator,
       selfDeaf: true
+    });
+
+    this.connection.on("stateChange", (oldState, newState) => {
+      console.log(`[voice:${this.guild.id}] state ${oldState.status} -> ${newState.status}`);
     });
 
     this.connection.on("error", (error) => {
