@@ -138,7 +138,10 @@ export class ProviderResolver {
   }
 
   private async findPlayableAlternative(query: string) {
-    const [video] = await play.search(query, { limit: 1 });
+    const [video] = await play.search(query, {
+      limit: 1,
+      source: { youtube: "video" }
+    });
     if (video) {
       const playbackUrl = video.url ?? ("id" in video && video.id
         ? `https://www.youtube.com/watch?v=${video.id}`
@@ -158,7 +161,10 @@ export class ProviderResolver {
       };
     }
 
-    const soundCloudResults = await play.search(query, { source: { soundcloud: "tracks" }, limit: 1 });
+    const soundCloudResults = await play.search(query, {
+      source: { soundcloud: "tracks" },
+      limit: 1
+    });
     const first = soundCloudResults[0];
 
     if (!first) {

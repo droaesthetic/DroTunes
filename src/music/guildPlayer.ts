@@ -329,6 +329,10 @@ export class GuildPlayer {
     this.isAdvancing = true;
 
     try {
+      if (!track.playbackUrl || !/^https?:\/\//i.test(track.playbackUrl)) {
+        throw new Error(`Track "${track.title}" does not have a valid playback URL.`);
+      }
+
       const stream = await play.stream(track.playbackUrl, {
         discordPlayerCompatibility: true,
         quality: 2,
