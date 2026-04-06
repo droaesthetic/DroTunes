@@ -61,14 +61,45 @@ export class GuildPlayer {
     this.voiceChannelId = voiceChannel.id;
     this.textChannelId = textChannelId;
 
+    if (this.connection && this.connection.joinConfig.channelId === voiceChannel.id) {
+      this.connection.subscribe(this.player);
+      return;
+    }
+
+    if (this.connection) {
+      this.connection.destroy();
+      this.connection = undefined;
+    }
+
     this.connection = joinVoiceChannel({
       channelId: voiceChannel.id,
       guildId: voiceChannel.guild.id,
-      adapterCreator: voiceChannel.guild.voiceAdapterCreator
+      adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+      selfDeaf: true
+    });
+
+    this.connection.on("error", (error) => {
+      console.error(`[voice:${this.guild.id}] connection error`, error);
     });
 
     this.connection.subscribe(this.player);
-    await entersState(this.connection, VoiceConnectionStatus.Ready, 20_000);
+
+    try {
+      await entersState(this.connection, VoiceConnectionStatus.Ready, 20_000);
+    } catch (error) {
+      console.error(`[voice:${this.guild.id}] initial connect failed`, error);
+      this.connection.rejoin();
+      try {
+        await entersState(this.connection, VoiceConnectionStatus.Ready, 20_000);
+      } catch (retryError) {
+        console.error(`[voice:${this.guild.id}] retry connect failed`, retryError);
+        const detail = retryError instanceof Error ? retryError.message : String(retryError);
+        throw new Error(
+          `Voice connection failed while joining Discord. This is often a hosting-network issue with Discord voice UDP. Details: ${detail}`
+        );
+      }
+    }
+
     await this.persist();
   }
 
@@ -311,6 +342,9 @@ export class GuildPlayer {
       }
 
       this.player.play(resource);
+    } catch (error) {
+      console.error(`[voice:${this.guild.id}] failed to start track ${track.title}`, error);
+      throw error;
     } finally {
       this.isAdvancing = false;
     }

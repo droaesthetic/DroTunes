@@ -97,6 +97,7 @@ export async function createBot() {
     try {
       await handleSlashCommand(interaction, music);
     } catch (error) {
+      console.error(`[slash:${interaction.commandName}]`, error);
       const message = error instanceof Error ? error.message : "Something went wrong.";
       if (interaction.deferred || interaction.replied) {
         await interaction.followUp({ content: message, ephemeral: true });
@@ -159,6 +160,7 @@ export async function createBot() {
           return;
       }
     } catch (error) {
+      console.error(`[prefix:${command ?? "unknown"}]`, error);
       await message.reply(error instanceof Error ? error.message : "Something went wrong.");
     }
   });
