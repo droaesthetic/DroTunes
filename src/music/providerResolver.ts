@@ -21,28 +21,30 @@ const providerMatchers: Array<{ provider: Provider; regex: RegExp }> = [
 
 export class ProviderResolver {
   async resolve({ query, requestedBy, requestedById }: ResolveOptions): Promise<ResolvedTrack> {
-    const provider = this.detectProvider(query);
+    const normalizedQuery = query.trim();
+    const isUrl = /^https?:\/\//i.test(normalizedQuery);
+    const provider = isUrl ? this.detectProvider(normalizedQuery) : "search";
 
     if (provider === "search") {
-      return this.resolveSearch(query, requestedBy, requestedById);
+      return this.resolveSearch(normalizedQuery, requestedBy, requestedById);
     }
 
     if (provider === "youtube") {
-      return this.resolveYouTube(query, requestedBy, requestedById);
+      return this.resolveYouTube(normalizedQuery, requestedBy, requestedById);
     }
 
     if (provider === "soundcloud") {
-      return this.resolveSoundCloud(query, requestedBy, requestedById);
+      return this.resolveSoundCloud(normalizedQuery, requestedBy, requestedById);
     }
 
-    const metadata = await this.resolveMetadataFromUrl(query, provider);
+    const metadata = await this.resolveMetadataFromUrl(normalizedQuery, provider);
     const searchQuery = [metadata.artist, metadata.title].filter(Boolean).join(" - ");
-    const playback = await this.findPlayableAlternative(searchQuery || query);
+    const playback = await this.findPlayableAlternative(searchQuery || normalizedQuery);
 
     return {
       title: metadata.title ?? playback.title ?? "Unknown title",
       artist: metadata.artist,
-      url: query,
+      url: normalizedQuery,
       artwork: metadata.artwork ?? playback.artwork,
       durationInSeconds: metadata.durationInSeconds ?? playback.durationInSeconds,
       requestedBy,
