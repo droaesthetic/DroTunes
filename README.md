@@ -6,7 +6,7 @@ Dro Tunes is a Discord music bot starter with:
 - optional prefixed text commands
 - high-quality voice playback via `@discordjs/voice`
 - URL intake for YouTube, SoundCloud, Spotify, Deezer, Apple Music, Suno, and Amazon Music
-- a password-protected web dashboard you can host on your own `.xyz` domain
+- a password-protected web dashboard you can run on your PC or later host on your own `.xyz` domain
 - persistent queues, playlists, autoplay, queue cleanup tools, and per-guild permissions
 
 ## What "supports these links" means
@@ -40,6 +40,26 @@ npm run dev
 4. Open the dashboard:
 
 `http://localhost:3000`
+
+## Run It On Your PC
+
+This project is now set up to run well as a local Windows bot.
+
+1. Fill in [`.env`](C:\Users\aleks\Desktop\dro-tunes\.env)
+2. Double-click [`start-local.bat`](C:\Users\aleks\Desktop\dro-tunes\start-local.bat)
+
+Or run:
+
+```powershell
+.\start-local.ps1
+```
+
+That starts:
+
+- the Discord bot on your PC
+- the dashboard at `http://localhost:3000`
+
+To keep it working, your PC needs to stay on and connected to the internet.
 
 ## Features
 
@@ -105,7 +125,21 @@ Point your `.xyz` domain to the machine or host running this app, then set:
 
 The dashboard uses a bearer token for control. Put it behind Cloudflare Access, Tailscale Funnel, Caddy basic auth, or another gate if you want an extra security layer.
 
-## Render production setup
+## Optional Public Dashboard
+
+If you want to control the dashboard from outside your house later, you have three main options:
+
+- keep the bot on your PC and use a tunnel like Cloudflare Tunnel or Tailscale Funnel
+- port-forward your dashboard carefully behind a reverse proxy
+- split the dashboard and bot onto different hosts
+
+For local-only use, keep:
+
+```env
+DASHBOARD_PUBLIC_URL=http://localhost:3000
+```
+
+## Old Render Notes
 
 For Render:
 
