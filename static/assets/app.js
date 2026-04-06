@@ -3,6 +3,7 @@ const saveTokenButton = document.getElementById("saveToken");
 const refreshButton = document.getElementById("refresh");
 const playersNode = document.getElementById("players");
 const template = document.getElementById("playerTemplate");
+const statusNode = document.getElementById("status");
 
 const storageKey = "dro-tunes-dashboard-token";
 
@@ -13,7 +14,22 @@ saveTokenButton.addEventListener("click", async () => {
   await refreshPlayers();
 });
 
+tokenInput.addEventListener("keydown", async (event) => {
+  if (event.key === "Enter") {
+    localStorage.setItem(storageKey, tokenInput.value.trim());
+    await refreshPlayers();
+  }
+});
+
 refreshButton.addEventListener("click", refreshPlayers);
+
+function setStatus(message, tone = "") {
+  statusNode.textContent = message;
+  statusNode.className = "status-message";
+  if (tone) {
+    statusNode.classList.add(tone);
+  }
+}
 
 async function api(path, options = {}) {
   const token = tokenInput.value.trim();
@@ -42,8 +58,11 @@ function renderPlayers(players) {
     empty.className = "empty";
     empty.textContent = "No active players yet. Use /play in Discord and refresh.";
     playersNode.append(empty);
+    setStatus("Connected. No active players yet.", "is-success");
     return;
   }
+
+  setStatus("Connected. Dashboard data loaded.", "is-success");
 
   for (const player of players) {
     const fragment = template.content.cloneNode(true);
@@ -113,8 +132,18 @@ async function refreshPlayers() {
     playersNode.replaceChildren();
     const message = document.createElement("p");
     message.className = "empty";
-    message.textContent = error instanceof Error ? error.message : "Unable to load players.";
+    const text = error instanceof Error ? error.message : "Unable to load players.";
+    message.textContent = text;
     playersNode.append(message);
+    if (/unauthorized/i.test(text)) {
+      setStatus("That token was rejected. Check DASHBOARD_AUTH_TOKEN and try again.", "is-error");
+      return;
+    }
+    if (/starting up/i.test(text)) {
+      setStatus("The bot service is still starting up. Wait a moment and refresh.", "is-error");
+      return;
+    }
+    setStatus(text, "is-error");
   }
 }
 

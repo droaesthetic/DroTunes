@@ -66,6 +66,19 @@ h1 {
   color: var(--muted);
 }
 
+.status-message {
+  margin: 14px 0 0;
+  color: var(--muted);
+}
+
+.status-message.is-success {
+  color: var(--accent);
+}
+
+.status-message.is-error {
+  color: var(--danger);
+}
+
 .auth-bar {
   display: flex;
   gap: 12px;
