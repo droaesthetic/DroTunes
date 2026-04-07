@@ -8,6 +8,7 @@ const commands = [
     .addStringOption((option) =>
       option.setName("query").setDescription("A song URL or search terms").setRequired(true)
     ),
+  new SlashCommandBuilder().setName("join").setDescription("Join your current voice channel."),
   new SlashCommandBuilder().setName("pause").setDescription("Pause playback."),
   new SlashCommandBuilder().setName("resume").setDescription("Resume playback."),
   new SlashCommandBuilder().setName("stop").setDescription("Stop playback and disconnect."),

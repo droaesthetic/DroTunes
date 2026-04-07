@@ -88,6 +88,24 @@ export class MusicManager {
     return track;
   }
 
+  async join(interaction: ChatInputCommandInteraction) {
+    const guild = interaction.guild;
+    if (!guild) {
+      throw new Error("This command can only be used in a server.");
+    }
+
+    const member = await guild.members.fetch(interaction.user.id);
+    const voiceChannel = member.voice.channel;
+
+    if (!voiceChannel || voiceChannel.type !== ChannelType.GuildVoice) {
+      throw new Error("Join a voice channel first.");
+    }
+
+    await this.assertCanControl(member, guild.id);
+    await this.ensurePlayer(guild, voiceChannel, interaction.channelId);
+    return voiceChannel;
+  }
+
   async playMany(interaction: ChatInputCommandInteraction, queries: string[]) {
     const tracks: ResolvedTrack[] = [];
     for (const query of queries) {

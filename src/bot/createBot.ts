@@ -176,6 +176,13 @@ async function handleSlashCommand(
   const guildId = interaction.guildId;
 
   switch (interaction.commandName) {
+    case "join": {
+      await interaction.deferReply({ ephemeral: true });
+      const voiceChannel = await music.join(interaction);
+      await interaction.editReply(`Joined **${voiceChannel.name}**.`);
+      return;
+    }
+
     case "play": {
       await interaction.deferReply();
       const query = interaction.options.getString("query", true);
