@@ -6,7 +6,11 @@ export class LavalinkService {
   readonly manager: Shoukaku;
 
   constructor(client: Client) {
-    const nodes: NodeOption[] = [appConfig.lavalink];
+    const nodes: NodeOption[] = [{
+      ...appConfig.lavalink,
+      // Force plain HTTP/WS for this node unless you intentionally change the code.
+      secure: false
+    }];
     this.manager = new Shoukaku(new Connectors.DiscordJS(client), nodes, {
       resume: true,
       resumeTimeout: 30,
