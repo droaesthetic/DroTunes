@@ -3,12 +3,17 @@ import { Connectors, LoadType, Shoukaku, type NodeOption, type Player, type Trac
 import { appConfig } from "../config.js";
 
 export class LavalinkService {
-  readonly manager: Shoukaku;
+  readonly manager?: Shoukaku;
+  readonly enabled: boolean;
 
   constructor(client: Client) {
+    this.enabled = Boolean(appConfig.lavalink);
+    if (!appConfig.lavalink) {
+      return;
+    }
+
     const nodes: NodeOption[] = [{
       ...appConfig.lavalink,
-      // Force plain HTTP/WS for this node unless you intentionally change the code.
       secure: false
     }];
     this.manager = new Shoukaku(new Connectors.DiscordJS(client), nodes, {
@@ -33,6 +38,7 @@ export class LavalinkService {
   }
 
   async join(guildId: string, channelId: string, shardId: number) {
+    this.assertEnabled();
     return this.manager.joinVoiceChannel({
       guildId,
       channelId,
@@ -42,10 +48,12 @@ export class LavalinkService {
   }
 
   async leave(guildId: string) {
+    this.assertEnabled();
     await this.manager.leaveVoiceChannel(guildId);
   }
 
   async resolve(identifier: string): Promise<Track> {
+    this.assertEnabled();
     const node = this.manager.getIdealNode();
     if (!node) {
       throw new Error("No Lavalink node is currently available.");
@@ -77,10 +85,17 @@ export class LavalinkService {
   }
 
   async play(player: Player, encoded: string, volume: number, positionMs = 0) {
+    this.assertEnabled();
     await player.playTrack({
       track: { encoded },
       volume,
       position: positionMs
     });
+  }
+
+  private assertEnabled(): asserts this is { manager: Shoukaku; enabled: true } & LavalinkService {
+    if (!this.manager || !this.enabled) {
+      throw new Error("Lavalink is not configured yet. Add your own node details before using voice commands.");
+    }
   }
 }

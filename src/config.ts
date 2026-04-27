@@ -8,8 +8,8 @@ const schema = z.object({
   DISCORD_CLIENT_ID: z.string().min(1),
   DISCORD_GUILD_ID: z.string().optional(),
   LAVALINK_NAME: z.string().default("main"),
-  LAVALINK_URL: z.string().min(1),
-  LAVALINK_PASSWORD: z.string().min(1),
+  LAVALINK_URL: z.string().default(""),
+  LAVALINK_PASSWORD: z.string().default(""),
   LAVALINK_SECURE: z.coerce.boolean().default(false),
   PORT: z.coerce.number().optional(),
   DASHBOARD_PORT: z.coerce.number().optional(),
@@ -26,12 +26,12 @@ export const appConfig = {
   discordToken: parsed.DISCORD_TOKEN,
   discordClientId: parsed.DISCORD_CLIENT_ID,
   discordGuildId: parsed.DISCORD_GUILD_ID,
-  lavalink: {
+  lavalink: parsed.LAVALINK_URL && parsed.LAVALINK_PASSWORD ? {
     name: parsed.LAVALINK_NAME,
     url: parsed.LAVALINK_URL,
     auth: parsed.LAVALINK_PASSWORD,
     secure: parsed.LAVALINK_SECURE
-  },
+  } : null,
   dashboardPort: parsed.PORT ?? parsed.DASHBOARD_PORT ?? 3000,
   dashboardPublicUrl: parsed.DASHBOARD_PUBLIC_URL,
   dashboardAuthToken: parsed.DASHBOARD_AUTH_TOKEN,
