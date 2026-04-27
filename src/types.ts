@@ -22,6 +22,7 @@ export interface ResolvedTrack {
   sourceProvider: Provider;
   playbackProvider: "youtube" | "soundcloud";
   playbackUrl: string;
+  encodedTrack?: string;
   addedAt: string;
 }
 

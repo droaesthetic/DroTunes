@@ -9,16 +9,14 @@ import type {
 import { ChannelType, PermissionFlagsBits } from "discord.js";
 import { ProviderResolver } from "./providerResolver.js";
 import { GuildPlayer } from "./guildPlayer.js";
+import { LavalinkService } from "./lavalinkService.js";
 import { StateStore } from "../storage/stateStore.js";
 import type {
   GuildSettings,
-  PermissionMode,
   Playlist,
   QueueSnapshot,
   ResolvedTrack
 } from "../types.js";
-
-type CommandContext = ChatInputCommandInteraction | Message;
 
 const defaultPrefix = "!";
 
@@ -29,7 +27,8 @@ export class MusicManager {
 
   constructor(
     private readonly client: Client,
-    private readonly store: StateStore
+    private readonly store: StateStore,
+    private readonly lavalink: LavalinkService
   ) {}
 
   async init() {
@@ -415,7 +414,7 @@ export class MusicManager {
   private async ensurePlayer(guild: Guild, voiceChannel: VoiceBasedChannel, textChannelId: string) {
     let player = this.players.get(guild.id);
     if (!player) {
-      player = new GuildPlayer(guild, {
+      player = new GuildPlayer(guild, this.lavalink, {
         restoredState: this.store.getGuildPlayer(guild.id),
         onStateChange: async (state) => {
           if (state) {
@@ -436,6 +435,19 @@ export class MusicManager {
             requestedBy: "Autoplay",
             requestedById: this.client.user?.id ?? "autoplay"
           });
+        },
+        resolvePlaybackTrack: async (track) => {
+          if (track.encodedTrack) {
+            return track.encodedTrack;
+          }
+
+          const lavalinkTrack = await this.lavalink.resolve(track.playbackUrl);
+          track.encodedTrack = lavalinkTrack.encoded;
+          track.durationInSeconds ??= Math.floor(lavalinkTrack.info.length / 1000);
+          track.playbackUrl = lavalinkTrack.info.uri ?? track.playbackUrl;
+          track.title ||= lavalinkTrack.info.title;
+          track.artist ||= lavalinkTrack.info.author;
+          return lavalinkTrack.encoded;
         }
       });
       const settings = this.getGuildSettings(guild.id);

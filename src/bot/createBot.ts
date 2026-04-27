@@ -11,6 +11,7 @@ import {
 } from "discord.js";
 import { registerCommands } from "./commands.js";
 import { MusicManager } from "../music/musicManager.js";
+import { LavalinkService } from "../music/lavalinkService.js";
 import { StateStore } from "../storage/stateStore.js";
 
 function describeTrack(index: number, track: { title: string; artist?: string }) {
@@ -81,7 +82,8 @@ export async function createBot() {
   });
 
   const store = new StateStore();
-  const music = new MusicManager(client, store);
+  const lavalink = new LavalinkService(client);
+  const music = new MusicManager(client, store, lavalink);
   await music.init();
 
   client.once(Events.ClientReady, async (readyClient) => {
